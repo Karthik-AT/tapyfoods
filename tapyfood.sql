@@ -4,11 +4,6 @@
 --  Run: mysql -u root -p < tapyfood.sql
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS tapyfood_db
-    CHARACTER SET utf8mb4
-    COLLATE utf8mb4_unicode_ci;
-
-USE tapyfood_db;
 
 -- Drop in reverse FK order for clean re-run
 DROP TABLE IF EXISTS cart;
