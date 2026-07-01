@@ -2,6 +2,8 @@
 
 A fully functional, premium food ordering web application built with **Java Servlets & JSP**, backed by a **MySQL** database, and styled using vanilla CSS.
 
+🌐 **Live Demo**: [tapyfoods.onrender.com](https://tapyfoods.onrender.com)
+
 ---
 
 ## 📌 Table of Contents
