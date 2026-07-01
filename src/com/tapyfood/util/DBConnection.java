@@ -6,12 +6,13 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
+    private static final String DB_HOST = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
     private static final String DB_URL =
-        "jdbc:mysql://localhost:3306/tapyfood_db" +
+        "jdbc:mysql://" + DB_HOST + ":3306/tapyfood_db" +
         "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata";
 
-    private static final String DB_USER = "root";
-    private static final String DB_PASS = "24-08-2004KAT";
+    private static final String DB_USER = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
+    private static final String DB_PASS = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "24-08-2004KAT";
 
     static {
         try {
