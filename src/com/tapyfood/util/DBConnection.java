@@ -7,8 +7,9 @@ import java.sql.SQLException;
 public class DBConnection {
 
     private static final String DB_HOST = System.getenv("DB_HOST") != null ? System.getenv("DB_HOST") : "localhost";
+    private static final String DB_NAME = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "tapyfood_db";
     private static final String DB_URL =
-        "jdbc:mysql://" + DB_HOST + ":3306/tapyfood_db" +
+        "jdbc:mysql://" + DB_HOST + ":3306/" + DB_NAME +
         "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata";
 
     private static final String DB_USER = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
