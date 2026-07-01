@@ -1,8 +1,4 @@
-/* ============================================================
-   TAPY FOOD — style.css
-   Design System: Coffee Roast
-   Typography: Fraunces (display/headings) + Inter (body/labels)
-   ============================================================ */
+
 
 /* ---------- DESIGN TOKENS ---------- */
 :root {
@@ -310,9 +306,7 @@ section {
     margin: 0;
 }
 
-/* ============================================================
-   HERO SECTION (#home)
-   ============================================================ */
+
 #home {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -432,9 +426,7 @@ section {
     border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-/* ============================================================
-   HOW IT WORKS SECTION
-   ============================================================ */
+
 #how-it-works {
     display: flex;
     flex-direction: column;
@@ -503,9 +495,7 @@ section {
     line-height: 1.6;
 }
 
-/* ============================================================
-   ABOUT SECTION (#about)
-   ============================================================ */
+
 #about {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -597,9 +587,7 @@ section {
     color: var(--color-primary);
 }
 
-/* ============================================================
-   RESTAURANT & FOOD CARDS
-   ============================================================ */
+
 #best-restaurants,
 #best-sellers {
     display: flex;
@@ -751,9 +739,7 @@ section {
     color: var(--color-primary);
 }
 
-/* ============================================================
-   TESTIMONIALS SECTION
-   ============================================================ */
+
 #testimonials {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -820,9 +806,7 @@ section {
     letter-spacing: 0.04em;
 }
 
-/* ============================================================
-   CONTACT SECTION (#contact)
-   ============================================================ */
+
 #contact {
     display: flex;
     flex-direction: column;
@@ -920,6 +904,7 @@ form label {
 form input[type="text"],
 form input[type="email"],
 form input[type="tel"],
+form input[type="password"],
 form textarea {
     background: var(--color-neutral);
     border: 1.5px solid var(--color-border);
@@ -952,9 +937,7 @@ form .btn {
     width: 100%;
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
+
 #site-footer {
     background: var(--color-primary);
     color: var(--color-on-primary);
@@ -1080,9 +1063,7 @@ form .btn {
     color: rgba(247, 238, 220, 0.80);
 }
 
-/* ============================================================
-   RESPONSIVE — TABLET (≤ 900px)
-   ============================================================ */
+
 @media (max-width: 900px) {
     #home {
         grid-template-columns: 1fr;
@@ -1118,9 +1099,7 @@ form .btn {
     }
 }
 
-/* ============================================================
-   RESPONSIVE — MOBILE (≤ 640px)
-   ============================================================ */
+
 @media (max-width: 640px) {
     :root {
         --sp-lg: 20px;
