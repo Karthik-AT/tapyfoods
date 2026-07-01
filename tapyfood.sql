@@ -1,294 +1,92 @@
--- ============================================================
---  TAPY FOOD DATABASE — tapyfood.sql
---  MySQL 8.0+
---  Run: mysql -u root -p < tapyfood.sql
--- ============================================================
+-- MySQL dump 10.13  Distrib 8.0.45, for Win64 (x86_64)
+--
+-- Host: localhost    Database: tapyfood_db
+-- ------------------------------------------------------
+-- Server version	8.0.45
 
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Drop in reverse FK order for clean re-run
-DROP TABLE IF EXISTS cart;
-DROP TABLE IF EXISTS order_items;
-DROP TABLE IF EXISTS orders;
-DROP TABLE IF EXISTS menu;
-DROP TABLE IF EXISTS restaurant;
-DROP TABLE IF EXISTS users;
+--
+-- Table structure for table `restaurant`
+--
 
--- ============================================================
---  TABLE: restaurant
--- ============================================================
-CREATE TABLE restaurant (
-    id            INT AUTO_INCREMENT PRIMARY KEY,
-    name          VARCHAR(100)    NOT NULL,
-    cuisine_type  VARCHAR(100)    NOT NULL,
-    rating        DECIMAL(2,1)    NOT NULL DEFAULT 4.0,
-    delivery_time VARCHAR(20)     NOT NULL DEFAULT '30 min',
-    location      VARCHAR(150)    NOT NULL,
-    image_url     TEXT,
-    offer_badge   VARCHAR(100),
-    description   TEXT,
-    created_at    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+DROP TABLE IF EXISTS `restaurant`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `restaurant` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cuisine_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `rating` decimal(2,1) NOT NULL DEFAULT '4.0',
+  `delivery_time` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '30 min',
+  `location` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image_url` text COLLATE utf8mb4_unicode_ci,
+  `offer_badge` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ============================================================
---  TABLE: menu
--- ============================================================
-CREATE TABLE menu (
-    id            INT AUTO_INCREMENT PRIMARY KEY,
-    restaurant_id INT             NOT NULL,
-    name          VARCHAR(150)    NOT NULL,
-    category      VARCHAR(50)     NOT NULL,
-    price         DECIMAL(10,2)   NOT NULL,
-    description   TEXT,
-    image_url     TEXT,
-    is_veg        TINYINT(1)      NOT NULL DEFAULT 0,
-    created_at    TIMESTAMP       DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_menu_restaurant
-        FOREIGN KEY (restaurant_id) REFERENCES restaurant(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+--
+-- Dumping data for table `restaurant`
+--
 
--- ============================================================
---  TABLE: users
--- ============================================================
-CREATE TABLE users (
-    id         INT AUTO_INCREMENT PRIMARY KEY,
-    name       VARCHAR(100)  NOT NULL,
-    email      VARCHAR(150)  NOT NULL UNIQUE,
-    password   VARCHAR(255)  NOT NULL,
-    phone      VARCHAR(20),
-    address    TEXT,
-    created_at TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB;
+LOCK TABLES `restaurant` WRITE;
+/*!40000 ALTER TABLE `restaurant` DISABLE KEYS */;
+INSERT INTO `restaurant` VALUES (1,'Pizza Hut','Pizza',4.5,'30 mins','Bangalore','https://images.unsplash.com/photo-1513104890138-7c749659a591?w=700&q=80','15% OFF','Delicious hot pan pizzas topped with fresh veggies and melty mozzarella.','2026-06-26 05:18:30'),(2,'KFC','Chicken',4.2,'25 mins','Bangalore','https://images.unsplash.com/photo-1569058242253-92a9c755a0ec?w=700&q=80','Free piece on ├ö├⌐Γòú499+','Crispy, juicy signature fried chicken, hot wings, and zesty burgers.','2026-06-26 05:18:30'),(3,'Dominos','Pizza',4.4,'20 mins','Bangalore','https://images.unsplash.com/photo-1590947132387-155cc02f3212?w=700&q=80','Buy 1 Get 1','Freshly baked hand-tossed pizzas delivered hot and fresh in 30 minutes.','2026-06-26 05:18:30'),(4,'Burger King','Burger',4.3,'25 mins','Bangalore','https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&q=80','Combo deals','Flame-grilled burgers, crispy fries, and refreshing beverages.','2026-06-26 05:18:30'),(5,'McDonalds','Fast Food',4.4,'20 mins','Bangalore','https://images.unsplash.com/photo-1561758033-d89a9ad46330?w=700&q=80','Happy Meal discount','Golden fries, classic burgers, wraps, and ice-cold shakes.','2026-06-26 05:18:30'),(6,'Subway','Sandwich',4.1,'18 mins','Bangalore','https://images.unsplash.com/photo-1509722747041-616f39b57569?w=700&q=80','Sub of the Day','Fresh, healthy, custom-made submarine sandwiches and wraps.','2026-06-26 05:18:30'),(7,'Meghana Foods','Biryani',4.7,'30 mins','Bangalore','images/meghana_store.jpg','Authentic Taste','Famous spicy and aromatic Hyderabadi biryani and Andhra specialties.','2026-06-26 05:18:30'),(8,'Empire Restaurant','Biryani',4.5,'28 mins','Bangalore','https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=700&q=80','Late Night Delivery','Popular multi-cuisine dining known for ghee rice, kebabs, and shawarmas.','2026-06-26 05:18:30'),(9,'Udupi Palace','South Indian',4.3,'15 mins','Bangalore','https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=700&q=80','Pure Veg','Traditional South Indian breakfast, crispy dosas, idlis, and filter coffee.','2026-06-26 05:18:30'),(10,'Barbeque Nation','BBQ',4.6,'35 mins','Bangalore','https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&q=80','Unlimited Buffet','Delicious over-the-table grill skewers, main courses, and desserts.','2026-06-26 05:18:30'),(11,'The Grand Bistro','European Γö¼├Ç Fine Dining',4.9,'25-35 min','Bangalore','https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=85&auto=format&fit=crop','20% OFF on first order','Classic European dining with a modern twist ├ö├ç├╢ artisan pasta, grilled prime steaks, and freshly baked pastries by world-class chefs.','2026-06-26 05:21:40'),(12,'Sushi Zen','Japanese Γö¼├Ç Sushi',4.8,'30-40 min','Bangalore','https://images.unsplash.com/photo-1552566626-52f8b828add9?w=700&q=85&auto=format&fit=crop','Free Miso Soup','Authentic Japanese delicacies with fresh ingredients flown in daily ├ö├ç├╢ traditional sashimi, signature rolls, and savory ramen bowls.','2026-06-26 05:21:40'),(13,'Bella Italia','Italian Γö¼├Ç Pizza & Pasta',4.7,'20-30 min','Bangalore','https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=85&auto=format&fit=crop','Buy 2 Get 1 Free','Hand-stretched stone-baked pizzas, rich lasagna, and premium house wines that make every dinner feel like a celebration in Rome.','2026-06-26 05:21:40'),(14,'Spice Garden','Indian Γö¼├Ç North Indian',4.6,'25-35 min','Bangalore','https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=700&q=85&auto=format&fit=crop','15% OFF weekends','Authentic North Indian cuisine with rich curries, tandoori specialties, and freshly baked naans that bring the flavors of Punjab to your table.','2026-06-26 05:21:40'),(15,'Burger Barn','American Γö¼├Ç Burgers',4.5,'15-25 min','Bangalore','https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=700&q=85&auto=format&fit=crop','Free Fries on ├ö├⌐Γòú499+','Flame-grilled gourmet burgers stacked with fresh ingredients, crispy fries, creamy shakes, and indulgent desserts for the ultimate comfort meal.','2026-06-26 05:21:40');
+/*!40000 ALTER TABLE `restaurant` ENABLE KEYS */;
+UNLOCK TABLES;
 
--- ============================================================
---  TABLE: orders
--- ============================================================
-CREATE TABLE orders (
-    id               INT AUTO_INCREMENT PRIMARY KEY,
-    user_id          INT            NOT NULL,
-    total_amount     DECIMAL(10,2)  NOT NULL,
-    status           VARCHAR(30)    NOT NULL DEFAULT 'Placed',
-    delivery_address TEXT           NOT NULL,
-    created_at       TIMESTAMP      DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT fk_orders_user
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE=InnoDB;
+--
+-- Table structure for table `menu`
+--
 
--- ============================================================
---  TABLE: order_items
--- ============================================================
-CREATE TABLE order_items (
-    id       INT AUTO_INCREMENT PRIMARY KEY,
-    order_id INT           NOT NULL,
-    menu_id  INT           NOT NULL,
-    quantity INT           NOT NULL DEFAULT 1,
-    price    DECIMAL(10,2) NOT NULL,
-    CONSTRAINT fk_orderitems_order
-        FOREIGN KEY (order_id) REFERENCES orders(id) ON DELETE CASCADE,
-    CONSTRAINT fk_orderitems_menu
-        FOREIGN KEY (menu_id) REFERENCES menu(id)
-) ENGINE=InnoDB;
+DROP TABLE IF EXISTS `menu`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `menu` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `restaurant_id` int NOT NULL,
+  `name` varchar(150) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `category` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `image_url` text COLLATE utf8mb4_unicode_ci,
+  `is_veg` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `fk_menu_restaurant` (`restaurant_id`),
+  CONSTRAINT `fk_menu_restaurant` FOREIGN KEY (`restaurant_id`) REFERENCES `restaurant` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 
--- ============================================================
---  TABLE: cart
--- ============================================================
-CREATE TABLE cart (
-    id       INT AUTO_INCREMENT PRIMARY KEY,
-    user_id  INT NOT NULL,
-    menu_id  INT NOT NULL,
-    quantity INT NOT NULL DEFAULT 1,
-    CONSTRAINT fk_cart_user
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    CONSTRAINT fk_cart_menu
-        FOREIGN KEY (menu_id) REFERENCES menu(id) ON DELETE CASCADE,
-    UNIQUE KEY uq_cart_item (user_id, menu_id)
-) ENGINE=InnoDB;
+--
+-- Dumping data for table `menu`
+--
 
--- ============================================================
---  SAMPLE DATA: Restaurants
--- ============================================================
-INSERT INTO restaurant (name, cuisine_type, rating, delivery_time, location, image_url, offer_badge, description) VALUES
-('The Grand Bistro',
- 'European · Fine Dining', 4.9, '25-35 min', 'Bandra West, Mumbai',
- 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=700&q=85&auto=format&fit=crop',
- '20% OFF on first order',
- 'Classic European dining with a modern twist — artisan pasta, grilled prime steaks, and freshly baked pastries by world-class chefs.'),
+LOCK TABLES `menu` WRITE;
+/*!40000 ALTER TABLE `menu` DISABLE KEYS */;
+INSERT INTO `menu` VALUES (1,1,'Veg Pizza','Mains',199.00,'Cheesy Veg Pizza','https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=80',1,'2026-06-26 05:18:30'),(2,1,'Paneer Pizza','Mains',249.00,'Paneer Loaded Pizza','https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?w=700&q=80',1,'2026-06-26 05:18:30'),(3,2,'Chicken Bucket','Mains',399.00,'Crispy Chicken Bucket','https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?w=700&q=80',0,'2026-06-26 05:18:30'),(4,2,'Zinger Burger','Mains',179.00,'Chicken Burger','https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=700&q=80',0,'2026-06-26 05:18:30'),(5,3,'Farmhouse Pizza','Mains',299.00,'Veg Loaded Pizza','https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&q=80',1,'2026-06-26 05:18:30'),(6,3,'Garlic Bread','Starters',129.00,'Cheesy Garlic Bread','https://images.unsplash.com/photo-1619535860434-ba1d8fa12536?w=700&q=80',1,'2026-06-26 05:18:30'),(7,11,'Grilled Ribeye Steak','Mains',849.00,'Grass-fed ribeye seared to perfection with garlic-herb butter. Served with creamy mashed potatoes and roasted asparagus.','https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=700&q=85',0,'2026-06-26 05:21:40'),(8,11,'Truffle Mushroom Risotto','Mains',549.00,'Creamy Arborio rice slow-cooked with wild mushrooms, finished with black truffle oil and aged Parmesan shavings.','https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=700&q=85',1,'2026-06-26 05:21:40'),(9,11,'Smoked Salmon Starter','Starters',349.00,'Norwegian smoked salmon on toasted sourdough with cream cheese, capers, and fresh dill.','https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=700&q=85',0,'2026-06-26 05:21:40'),(10,11,'French Onion Soup','Starters',249.00,'Classic caramelized onion soup topped with a toasted baguette crouton and melted GruyΓö£┬┐re cheese.','https://images.unsplash.com/photo-1547592166-23ac45744acd?w=700&q=85',1,'2026-06-26 05:21:40'),(11,11,'CrΓö£┬┐me BrΓö£ΓòùlΓö£┬«e','Desserts',199.00,'Silky vanilla custard with a perfectly caramelized sugar crust. A timeless French classic.','https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=700&q=85',1,'2026-06-26 05:21:40'),(12,11,'Fresh Lemonade','Drinks',149.00,'Hand-squeezed lemon with a hint of mint and sparkling water. Refreshing and zesty.','https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=700&q=85',1,'2026-06-26 05:21:40'),(13,12,'Dragon Roll','Mains',649.00,'Shrimp tempura and cucumber inside, topped with avocado and spicy mayo drizzle. A fan favorite.','https://images.unsplash.com/photo-1579871494447-9811cf80d66c?w=700&q=80',0,'2026-06-26 05:21:40'),(14,12,'Salmon Sashimi (6 pc)','Starters',499.00,'Premium Atlantic salmon sliced fresh daily, served with wasabi, pickled ginger, and soy sauce.','https://images.unsplash.com/photo-1534482421-64566f976cfa?w=700&q=85',0,'2026-06-26 05:21:40'),(15,12,'Chicken Ramen','Mains',429.00,'Rich tonkotsu-style broth with tender chicken chashu, soft-boiled egg, bamboo shoots, and nori.','https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=700&q=85',0,'2026-06-26 05:21:40'),(16,12,'Edamame','Starters',149.00,'Steamed and lightly salted young soybeans. A perfect light starter.','https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=700&q=85',1,'2026-06-26 05:21:40'),(17,12,'Mochi Ice Cream','Desserts',249.00,'Soft glutinous rice cake filled with premium matcha, strawberry, or vanilla ice cream (choice of 3).','https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=700&q=85',1,'2026-06-26 05:21:40'),(18,12,'Matcha Latte','Drinks',199.00,'Ceremonial-grade matcha whisked with steamed oat milk. Earthy, smooth, and energizing.','https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=700&q=85',1,'2026-06-26 05:21:40'),(19,13,'Pepperoni Supreme Pizza','Mains',499.00,'Stone-baked thin crust with tangy tomato base, fresh mozzarella, premium Italian pepperoni, and fresh basil.','https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&q=85',0,'2026-06-26 05:21:40'),(20,13,'Penne Arrabbiata','Mains',349.00,'Al dente penne in a spicy San Marzano tomato sauce with garlic, red chilli flakes, and fresh parsley.','https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=700&q=85',1,'2026-06-26 05:21:40'),(21,13,'Bruschetta al Pomodoro','Starters',199.00,'Toasted ciabatta rubbed with garlic, topped with ripe tomatoes, fresh basil, and extra-virgin olive oil.','https://images.unsplash.com/photo-1506280754576-f6fa8a873550?w=700&q=85',1,'2026-06-26 05:21:40'),(22,13,'Tiramisu','Desserts',249.00,'Classic Italian cheesecake layered with espresso-soaked ladyfingers and dusted with cocoa powder.','https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=700&q=85',1,'2026-06-26 05:21:40'),(23,13,'Margherita Pizza','Mains',399.00,'The classic. Tomato sauce, fresh buffalo mozzarella, and basil on a hand-stretched stone-baked crust.','https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=85',1,'2026-06-26 05:21:40'),(24,13,'Sparkling Lemonade','Drinks',149.00,'Italian-style sparkling lemonade with fresh lemon and elderflower. Light and refreshing.','https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=700&q=85',1,'2026-06-26 05:21:40'),(25,14,'Butter Chicken','Mains',349.00,'Tender chicken in a velvety, mildly spiced tomato and cream sauce. Best paired with naan or rice.','https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=700&q=85',0,'2026-06-26 05:21:40'),(26,14,'Dal Makhani','Mains',249.00,'Black lentils slow-cooked overnight with butter, cream, and aromatic spices. A North Indian staple.','https://images.unsplash.com/photo-1546833998-877b37c2e587?w=700&q=85',1,'2026-06-26 05:21:40'),(27,14,'Paneer Tikka','Starters',299.00,'Marinated cottage cheese cubes grilled in a tandoor with bell peppers and onions. Served with mint chutney.','https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=700&q=85',1,'2026-06-26 05:21:40'),(28,14,'Chicken Biryani','Mains',399.00,'Fragrant basmati rice cooked with tender chicken, saffron, whole spices, and caramelized onions. Served with raita.','https://images.unsplash.com/photo-1563379091339-03246963d96c?w=700&q=85',0,'2026-06-26 05:21:40'),(29,14,'Gulab Jamun','Desserts',149.00,'Soft milk-solid dumplings soaked in rose-flavored sugar syrup. Served warm with a sprinkle of pistachios.','https://images.unsplash.com/photo-1601050690597-df0568f70950?w=700&q=85',1,'2026-06-26 05:21:40'),(30,14,'Mango Lassi','Drinks',149.00,'Thick and creamy blend of fresh Alphonso mangoes and chilled yogurt. Summer in a glass.','https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=700&q=85',1,'2026-06-26 05:21:40'),(31,15,'Double Bacon Cheeseburger','Mains',379.00,'Two flame-grilled beef patties, melted cheddar, crispy bacon, fresh lettuce, tomato, and secret burger sauce on a brioche bun.','https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&q=85',0,'2026-06-26 05:21:40'),(32,15,'Classic Veggie Burger','Mains',279.00,'Crispy black bean and corn patty with lettuce, tomato, pickles, and chipotle mayo on a toasted sesame bun.','https://images.unsplash.com/photo-1520072959219-c595dc870360?w=700&q=85',1,'2026-06-26 05:21:40'),(33,15,'Loaded Cheese Fries','Starters',199.00,'Crispy golden fries smothered with melted cheddar cheese sauce, jalapeΓö£ΓûÆos, and sour cream.','https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=700&q=85',1,'2026-06-26 05:21:40'),(34,15,'Crispy Chicken Wings','Starters',299.00,'Juicy chicken wings tossed in your choice of BBQ, buffalo, or honey garlic sauce. Served with ranch dip.','https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=700&q=85',0,'2026-06-26 05:21:40'),(35,15,'Oreo Milkshake','Drinks',199.00,'Thick and indulgent Oreo cookie milkshake blended with vanilla ice cream and topped with whipped cream.','https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=700&q=85',1,'2026-06-26 05:21:40'),(36,15,'Brownie Sundae','Desserts',249.00,'Warm fudgy chocolate brownie topped with vanilla ice cream, hot fudge sauce, and crushed nuts.','https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=700&q=85',1,'2026-06-26 05:21:40'),(37,4,'Whopper Burger','Mains',199.00,'Flame-grilled chicken patty topped with fresh lettuce, tomatoes, onions, and signature mayonnaise on a toasted sesame seed bun.','https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&q=80',0,'2026-06-26 05:24:26'),(38,4,'Crispy Veg Burger','Mains',129.00,'Crispy vegetable patty, shredded lettuce, and creamy mayonnaise.','https://images.unsplash.com/photo-1525059696034-4967a8e1dca2?w=700&q=80',1,'2026-06-26 05:24:26'),(39,5,'McSpicy Chicken Burger','Mains',189.00,'Tender, juicy chicken patty coated in a spicy batter, topped with creamy sauce and lettuce.','https://images.unsplash.com/photo-1625813506062-0aeb1d7a094b?w=700&q=80',0,'2026-06-26 05:24:26'),(40,5,'French Fries (L)','Sides',119.00,'World famous crispy, golden, salted potato fries.','https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=700&q=80',1,'2026-06-26 05:24:26'),(41,6,'Chicken Teriyaki Sub','Mains',259.00,'Tender chicken breast strips glazed with sweet teriyaki sauce, served on freshly baked bread.','https://images.unsplash.com/photo-1509722747041-616f39b57569?w=700&q=80',0,'2026-06-26 05:24:26'),(42,6,'Veg Shammi Sub','Mains',219.00,'A traditional kebab made of lentils and spices, served on warm freshly baked bread.','https://images.unsplash.com/photo-1550507992-eb63ffee0847?w=700&q=80',1,'2026-06-26 05:24:26'),(43,7,'Meghana Chicken Biryani','Mains',349.00,'Spicy, aromatic basmati rice cooked with tender pieces of marinated chicken and secret spices.','https://images.unsplash.com/photo-1631515243349-e0cb75fb8d3a?w=700&q=80',0,'2026-06-26 05:24:26'),(44,7,'Paneer Biryani','Mains',299.00,'Fragrant basmati rice layered with soft paneer cubes cooked in a rich gravy.','https://images.unsplash.com/photo-1633945274405-b6c8069047b0?w=700&q=80',1,'2026-06-26 05:24:26'),(45,8,'Empire Special Ghee Rice','Mains',199.00,'Rich, aromatic basmati rice tossed in pure ghee and topped with fried onions and cashews.','https://images.unsplash.com/photo-1541832676-9b763b0239ab?w=700&q=80',1,'2026-06-26 05:24:26'),(46,8,'Empire Chicken Kabab','Starters',249.00,'Empire style deep-fried marinated chicken, crispy outside and juicy inside.','https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=700&q=80',0,'2026-06-26 05:24:26'),(47,9,'Masala Dosa','Mains',99.00,'Crispy golden crepe stuffed with a savory spiced potato mash, served with sambar and coconut chutney.','https://images.unsplash.com/photo-1668236543090-82eba5ee5976?w=700&q=80',1,'2026-06-26 05:24:26'),(48,9,'Idli Sambar (2 pc)','Breakfast',69.00,'Soft, steamed rice cakes served with hot lentil sambar and flavorful coconut chutney.','https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=700&q=80',1,'2026-06-26 05:24:26'),(49,10,'BBQ Grilled Skewers (Non-Veg)','Starters',499.00,'Assortment of chicken, fish, and prawn skewers marinated in spices and grilled to perfection.','https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=700&q=80',0,'2026-06-26 05:24:26'),(50,10,'Paneer & Veg Skewers','Starters',399.00,'Succulent paneer cubes, capsicum, onions, and mushrooms marinated and grilled.','https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=700&q=80',1,'2026-06-26 05:24:26');
+/*!40000 ALTER TABLE `menu` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-('Sushi Zen',
- 'Japanese · Sushi', 4.8, '30-40 min', 'Juhu, Mumbai',
- 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=700&q=85&auto=format&fit=crop',
- 'Free Miso Soup',
- 'Authentic Japanese delicacies with fresh ingredients flown in daily — traditional sashimi, signature rolls, and savory ramen bowls.'),
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
-('Bella Italia',
- 'Italian · Pizza & Pasta', 4.7, '20-30 min', 'Andheri East, Mumbai',
- 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=700&q=85&auto=format&fit=crop',
- 'Buy 2 Get 1 Free',
- 'Hand-stretched stone-baked pizzas, rich lasagna, and premium house wines that make every dinner feel like a celebration in Rome.'),
-
-('Spice Garden',
- 'Indian · North Indian', 4.6, '25-35 min', 'Dadar, Mumbai',
- 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=700&q=85&auto=format&fit=crop',
- '15% OFF weekends',
- 'Authentic North Indian cuisine with rich curries, tandoori specialties, and freshly baked naans that bring the flavors of Punjab to your table.'),
-
-('Burger Barn',
- 'American · Burgers', 4.5, '15-25 min', 'Powai, Mumbai',
- 'https://images.unsplash.com/photo-1466978913421-dad2ebd01d17?w=700&q=85&auto=format&fit=crop',
- 'Free Fries on ₹499+',
- 'Flame-grilled gourmet burgers stacked with fresh ingredients, crispy fries, creamy shakes, and indulgent desserts for the ultimate comfort meal.');
-
--- ============================================================
---  SAMPLE DATA: Menu Items — The Grand Bistro (id=1)
--- ============================================================
-INSERT INTO menu (restaurant_id, name, category, price, description, image_url, is_veg) VALUES
-(1, 'Grilled Ribeye Steak',     'Mains',    849.00,
- 'Grass-fed ribeye seared to perfection with garlic-herb butter. Served with creamy mashed potatoes and roasted asparagus.',
- 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=700&q=85&auto=format&fit=crop', 0),
-
-(1, 'Truffle Mushroom Risotto', 'Mains',    549.00,
- 'Creamy Arborio rice slow-cooked with wild mushrooms, finished with black truffle oil and aged Parmesan shavings.',
- 'https://images.unsplash.com/photo-1476124369491-e7addf5db371?w=700&q=85&auto=format&fit=crop', 1),
-
-(1, 'Smoked Salmon Starter',    'Starters', 349.00,
- 'Norwegian smoked salmon on toasted sourdough with cream cheese, capers, and fresh dill.',
- 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=700&q=85&auto=format&fit=crop', 0),
-
-(1, 'French Onion Soup',        'Starters', 249.00,
- 'Classic caramelized onion soup topped with a toasted baguette crouton and melted Gruyère cheese.',
- 'https://images.unsplash.com/photo-1547592166-23ac45744acd?w=700&q=85&auto=format&fit=crop', 1),
-
-(1, 'Crème Brûlée',             'Desserts', 199.00,
- 'Silky vanilla custard with a perfectly caramelized sugar crust. A timeless French classic.',
- 'https://images.unsplash.com/photo-1470124182917-cc6e71b22ecc?w=700&q=85&auto=format&fit=crop', 1),
-
-(1, 'Fresh Lemonade',           'Drinks',   149.00,
- 'Hand-squeezed lemon with a hint of mint and sparkling water. Refreshing and zesty.',
- 'https://images.unsplash.com/photo-1621263764928-df1444c5e859?w=700&q=85&auto=format&fit=crop', 1);
-
--- ============================================================
---  SAMPLE DATA: Menu Items — Sushi Zen (id=2)
--- ============================================================
-INSERT INTO menu (restaurant_id, name, category, price, description, image_url, is_veg) VALUES
-(2, 'Dragon Roll',              'Mains',    649.00,
- 'Shrimp tempura and cucumber inside, topped with avocado and spicy mayo drizzle. A fan favorite.',
- 'https://images.unsplash.com/photo-1617196034183-421b4040ed20?w=700&q=85&auto=format&fit=crop', 0),
-
-(2, 'Salmon Sashimi (6 pc)',    'Starters', 499.00,
- 'Premium Atlantic salmon sliced fresh daily, served with wasabi, pickled ginger, and soy sauce.',
- 'https://images.unsplash.com/photo-1534482421-64566f976cfa?w=700&q=85&auto=format&fit=crop', 0),
-
-(2, 'Chicken Ramen',            'Mains',    429.00,
- 'Rich tonkotsu-style broth with tender chicken chashu, soft-boiled egg, bamboo shoots, and nori.',
- 'https://images.unsplash.com/photo-1569050467447-ce54b3bbc37d?w=700&q=85&auto=format&fit=crop', 0),
-
-(2, 'Edamame',                  'Starters', 149.00,
- 'Steamed and lightly salted young soybeans. A perfect light starter.',
- 'https://images.unsplash.com/photo-1515003197210-e0cd71810b5f?w=700&q=85&auto=format&fit=crop', 1),
-
-(2, 'Mochi Ice Cream',          'Desserts', 249.00,
- 'Soft glutinous rice cake filled with premium matcha, strawberry, or vanilla ice cream (choice of 3).',
- 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=700&q=85&auto=format&fit=crop', 1),
-
-(2, 'Matcha Latte',             'Drinks',   199.00,
- 'Ceremonial-grade matcha whisked with steamed oat milk. Earthy, smooth, and energizing.',
- 'https://images.unsplash.com/photo-1536256263959-770b48d82b0a?w=700&q=85&auto=format&fit=crop', 1);
-
--- ============================================================
---  SAMPLE DATA: Menu Items — Bella Italia (id=3)
--- ============================================================
-INSERT INTO menu (restaurant_id, name, category, price, description, image_url, is_veg) VALUES
-(3, 'Pepperoni Supreme Pizza',  'Mains',    499.00,
- 'Stone-baked thin crust with tangy tomato base, fresh mozzarella, premium Italian pepperoni, and fresh basil.',
- 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=700&q=85&auto=format&fit=crop', 0),
-
-(3, 'Penne Arrabbiata',         'Mains',    349.00,
- 'Al dente penne in a spicy San Marzano tomato sauce with garlic, red chilli flakes, and fresh parsley.',
- 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=700&q=85&auto=format&fit=crop', 1),
-
-(3, 'Bruschetta al Pomodoro',   'Starters', 199.00,
- 'Toasted ciabatta rubbed with garlic, topped with ripe tomatoes, fresh basil, and extra-virgin olive oil.',
- 'https://images.unsplash.com/photo-1506280754576-f6fa8a873550?w=700&q=85&auto=format&fit=crop', 1),
-
-(3, 'Tiramisu',                 'Desserts', 249.00,
- 'Classic Italian mascarpone cream layered with espresso-soaked ladyfingers and dusted with cocoa powder.',
- 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=700&q=85&auto=format&fit=crop', 1),
-
-(3, 'Margherita Pizza',         'Mains',    399.00,
- 'The classic. Tomato sauce, fresh buffalo mozzarella, and basil on a hand-stretched stone-baked crust.',
- 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=700&q=85&auto=format&fit=crop', 1),
-
-(3, 'Sparkling Lemonade',       'Drinks',   149.00,
- 'Italian-style sparkling lemonade with fresh lemon and elderflower. Light and refreshing.',
- 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=700&q=85&auto=format&fit=crop', 1);
-
--- ============================================================
---  SAMPLE DATA: Menu Items — Spice Garden (id=4)
--- ============================================================
-INSERT INTO menu (restaurant_id, name, category, price, description, image_url, is_veg) VALUES
-(4, 'Butter Chicken',           'Mains',    349.00,
- 'Tender chicken in a velvety, mildly spiced tomato and cream sauce. Best paired with naan or rice.',
- 'https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?w=700&q=85&auto=format&fit=crop', 0),
-
-(4, 'Dal Makhani',              'Mains',    249.00,
- 'Black lentils slow-cooked overnight with butter, cream, and aromatic spices. A North Indian staple.',
- 'https://images.unsplash.com/photo-1546833998-877b37c2e587?w=700&q=85&auto=format&fit=crop', 1),
-
-(4, 'Paneer Tikka',             'Starters', 299.00,
- 'Marinated cottage cheese cubes grilled in a tandoor with bell peppers and onions. Served with mint chutney.',
- 'https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=700&q=85&auto=format&fit=crop', 1),
-
-(4, 'Chicken Biryani',          'Mains',    399.00,
- 'Fragrant basmati rice cooked with tender chicken, saffron, whole spices, and caramelized onions. Served with raita.',
- 'https://images.unsplash.com/photo-1563379091339-03246963d96c?w=700&q=85&auto=format&fit=crop', 0),
-
-(4, 'Gulab Jamun',              'Desserts', 149.00,
- 'Soft milk-solid dumplings soaked in rose-flavored sugar syrup. Served warm with a sprinkle of pistachios.',
- 'https://images.unsplash.com/photo-1601050690597-df0568f70950?w=700&q=85&auto=format&fit=crop', 1),
-
-(4, 'Mango Lassi',              'Drinks',   149.00,
- 'Thick and creamy blend of fresh Alphonso mangoes and chilled yogurt. Summer in a glass.',
- 'https://images.unsplash.com/photo-1527661591475-527312dd65f5?w=700&q=85&auto=format&fit=crop', 1);
-
--- ============================================================
---  SAMPLE DATA: Menu Items — Burger Barn (id=5)
--- ============================================================
-INSERT INTO menu (restaurant_id, name, category, price, description, image_url, is_veg) VALUES
-(5, 'Double Bacon Cheeseburger','Mains',    379.00,
- 'Two flame-grilled beef patties, melted cheddar, crispy bacon, fresh lettuce, tomato, and secret burger sauce on a brioche bun.',
- 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=700&q=85&auto=format&fit=crop', 0),
-
-(5, 'Classic Veggie Burger',    'Mains',    279.00,
- 'Crispy black bean and corn patty with lettuce, tomato, pickles, and chipotle mayo on a toasted sesame bun.',
- 'https://images.unsplash.com/photo-1520072959219-c595dc870360?w=700&q=85&auto=format&fit=crop', 1),
-
-(5, 'Loaded Cheese Fries',      'Starters', 199.00,
- 'Crispy golden fries smothered with melted cheddar cheese sauce, jalapeños, and sour cream.',
- 'https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=700&q=85&auto=format&fit=crop', 1),
-
-(5, 'Crispy Chicken Wings',     'Starters', 299.00,
- 'Juicy chicken wings tossed in your choice of BBQ, buffalo, or honey garlic sauce. Served with ranch dip.',
- 'https://images.unsplash.com/photo-1527477396000-e27163b481c2?w=700&q=85&auto=format&fit=crop', 0),
-
-(5, 'Oreo Milkshake',           'Drinks',   199.00,
- 'Thick and indulgent Oreo cookie milkshake blended with vanilla ice cream and topped with whipped cream.',
- 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=700&q=85&auto=format&fit=crop', 1),
-
-(5, 'Brownie Sundae',           'Desserts', 249.00,
- 'Warm fudgy chocolate brownie topped with vanilla ice cream, hot fudge sauce, and crushed nuts.',
- 'https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=700&q=85&auto=format&fit=crop', 1);
-
--- ============================================================
---  SAMPLE DATA: Users  (use BCrypt hashing in production!)
--- ============================================================
-INSERT INTO users (name, email, password, phone, address) VALUES
-('Karthik Sharma', 'karthik@tapyfood.in', 'Test@123', '+91 98765 43210',
- '42, Food Street, Bandra West, Mumbai 400050'),
-('Priya Singh', 'priya@tapyfood.in', 'Test@123', '+91 98765 43211',
- '15, Juhu Tara Road, Juhu, Mumbai 400049');
-
--- ============================================================
---  VERIFICATION QUERIES (uncomment to test)
--- ============================================================
--- SELECT * FROM restaurant;
--- SELECT m.*, r.name AS restaurant_name FROM menu m JOIN restaurant r ON m.restaurant_id = r.id;
--- SELECT * FROM users;
+-- Dump completed on 2026-07-02  1:27:22
