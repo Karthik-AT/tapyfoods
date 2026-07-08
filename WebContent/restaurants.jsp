@@ -23,34 +23,56 @@
     <div class="page-hero">
         <span class="section-eyebrow">Discover & Order</span>
         <h1 class="sectiontitle">All Restaurants</h1>
-        <p class="section-lead" style="margin:0 auto;">
+        <p class="section-lead" style="margin:0 auto; margin-bottom: var(--sp-md);">
             Explore the finest dining spots in your city. Fresh, fast, delivered in under 30 minutes.
         </p>
-    </div>
 
-    <div class="page-wrapper restaurants-page">
-
-        
-        <div class="search-bar-wrap">
+        <form method="GET" action="${pageContext.request.contextPath}/restaurants" class="search-bar-wrap">
             <span class="search-icon">🔍</span>
             <input
                 type="text"
+                name="search"
                 id="restaurant-search"
                 class="search-input"
                 placeholder="Search restaurants or cuisine…"
                 aria-label="Search restaurants"
+                value="<%= request.getAttribute("searchParam") != null ? request.getAttribute("searchParam") : "" %>"
                 autocomplete="off"
             >
-        </div>
+            <%
+                String catParam = (String) request.getAttribute("categoryParam");
+                if (catParam != null && !catParam.isEmpty()) {
+            %>
+            <input type="hidden" name="category" value="<%= catParam %>">
+            <% } %>
+            <button type="submit" style="display:none;">Search</button>
+        </form>
+    </div>
+
+    <div class="page-wrapper restaurants-page" style="padding-top: var(--sp-lg);">
 
         
         <div class="filter-tabs" role="group" aria-label="Filter by cuisine">
-            <button class="filter-tab active" data-filter="all">🍽 All</button>
-            <button class="filter-tab" data-filter="european">🇪🇺 European</button>
-            <button class="filter-tab" data-filter="japanese">🇯🇵 Japanese</button>
-            <button class="filter-tab" data-filter="italian">🇮🇹 Italian</button>
-            <button class="filter-tab" data-filter="indian">🇮🇳 Indian</button>
-            <button class="filter-tab" data-filter="american">🇺🇸 American</button>
+            <%
+                String currentCategory = (String) request.getAttribute("categoryParam");
+                if (currentCategory == null || currentCategory.isEmpty()) {
+                    currentCategory = "all";
+                }
+                String currentSearch = (String) request.getAttribute("searchParam");
+                String searchQueryParams = "";
+                if (currentSearch != null && !currentSearch.isEmpty()) {
+                    searchQueryParams = "&search=" + java.net.URLEncoder.encode(currentSearch, "UTF-8");
+                }
+
+                String[] filterVals = {"all", "european", "japanese", "italian", "indian", "american"};
+                String[] filterLabels = {"🍽 All", "🇪🇺 European", "🇯🇵 Japanese", "🇮🇹 Italian", "🇮🇳 Indian", "🇺🇸 American"};
+
+                for (int i = 0; i < filterVals.length; i++) {
+                    String activeClass = currentCategory.equalsIgnoreCase(filterVals[i]) ? "active" : "";
+                    String url = request.getContextPath() + "/restaurants?category=" + filterVals[i] + searchQueryParams;
+            %>
+            <a class="filter-tab <%= activeClass %>" href="<%= url %>"><%= filterLabels[i] %></a>
+            <% } %>
         </div>
 
         
@@ -83,8 +105,12 @@
                             alt="<%= r.getName() %>"
                             class="rest-card__img"
                             loading="lazy"
+                            <% if (!r.isActive()) { %> style="filter: grayscale(85%) opacity(70%);" <% } %>
                         >
                         <span class="rest-card__rating">⭐ <%= r.getRating() %></span>
+                        <% if (!r.isActive()) { %>
+                            <span style="position:absolute; top:12px; left:12px; background:#ef4444; color:#fff; padding:4px 10px; border-radius:6px; font-size:0.75rem; font-weight:700; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.15);">Closed</span>
+                        <% } %>
                     </div>
 
                     <div class="rest-card__body">
@@ -99,11 +125,19 @@
                         <p class="rest-card__desc"><%= r.getDescription() %></p>
 
                         <div class="rest-card__footer">
+                            <% if (r.isActive()) { %>
                             <a
                                 href="${pageContext.request.contextPath}/menu?restaurantId=<%= r.getId() %>"
                                 class="btn btn-primary rest-card__btn"
                                 id="view-menu-<%= r.getId() %>"
                             >View Menu →</a>
+                            <% } else { %>
+                            <button
+                                class="btn rest-card__btn"
+                                disabled
+                                style="background:#e5e7eb; color:#9ca3af; border-color:#e5e7eb; cursor:not-allowed; width:100%;"
+                            >Closed</button>
+                            <% } %>
                         </div>
                     </div>
                 </article>
@@ -127,6 +161,5 @@
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>
 
-<script src="${pageContext.request.contextPath}/js/main.js"></script>
 </body>
 </html>

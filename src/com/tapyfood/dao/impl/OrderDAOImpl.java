@@ -17,8 +17,8 @@ public class OrderDAOImpl implements OrderDAO {
 
     @Override
     public int placeOrder(Order order, List<OrderItem> items) {
-        String orderSql = "INSERT INTO orders (user_id, total_amount, status, delivery_address) " +
-                          "VALUES (?, ?, ?, ?)";
+        String orderSql = "INSERT INTO orders (user_id, total_amount, status, delivery_address, coupon_code) " +
+                          "VALUES (?, ?, ?, ?, ?)";
         String itemSql  = "INSERT INTO order_items (order_id, menu_id, quantity, price) " +
                           "VALUES (?, ?, ?, ?)";
 
@@ -36,6 +36,7 @@ public class OrderDAOImpl implements OrderDAO {
             orderPs.setDouble(2, order.getTotalAmount());
             orderPs.setString(3, "Placed");
             orderPs.setString(4, order.getDeliveryAddress());
+            orderPs.setString(5, order.getCouponCode());
             orderPs.executeUpdate();
 
             ResultSet keys = orderPs.getGeneratedKeys();
@@ -190,5 +191,107 @@ public class OrderDAOImpl implements OrderDAO {
         } finally {
             close(null, ps, con);
         }
+    }
+
+    @Override
+    public List<Order> getOrdersByRestaurantId(int restaurantId) {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT DISTINCT o.id, o.user_id, o.total_amount, o.status, o.delivery_address, o.created_at " +
+                     "FROM orders o " +
+                     "JOIN order_items oi ON o.id = oi.order_id " +
+                     "JOIN menu m ON oi.menu_id = m.id " +
+                     "WHERE m.restaurant_id = ? " +
+                     "ORDER BY o.created_at DESC";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = DBConnection.getConnection();
+            ps  = con.prepareStatement(sql);
+            ps.setInt(1, restaurantId);
+            rs  = ps.executeQuery();
+            while (rs.next()) {
+                Order o = mapOrderRow(rs);
+                o.setItems(getItemsForOrder(con, o.getId()));
+                orders.add(o);
+            }
+        } catch (SQLException e) {
+            System.err.println("[OrderDAO] getOrdersByRestaurantId() failed: " + e.getMessage());
+        } finally {
+            close(rs, ps, con);
+        }
+        return orders;
+    }
+
+    @Override
+    public double getRevenueByRestaurantId(int restaurantId) {
+        String sql = "SELECT SUM(oi.quantity * oi.price) AS revenue " +
+                     "FROM order_items oi " +
+                     "JOIN menu m ON oi.menu_id = m.id " +
+                     "JOIN orders o ON oi.order_id = o.id " +
+                     "WHERE m.restaurant_id = ? AND o.status != 'Cancelled'";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = DBConnection.getConnection();
+            ps  = con.prepareStatement(sql);
+            ps.setInt(1, restaurantId);
+            rs  = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("revenue");
+            }
+        } catch (SQLException e) {
+            System.err.println("[OrderDAO] getRevenueByRestaurantId() failed: " + e.getMessage());
+        } finally {
+            close(rs, ps, con);
+        }
+        return 0.0;
+    }
+
+    @Override
+    public List<Order> getAllOrders() {
+        List<Order> orders = new ArrayList<>();
+        String sql = "SELECT id, user_id, total_amount, status, delivery_address, created_at " +
+                     "FROM orders ORDER BY created_at DESC";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = DBConnection.getConnection();
+            ps  = con.prepareStatement(sql);
+            rs  = ps.executeQuery();
+            while (rs.next()) {
+                Order o = mapOrderRow(rs);
+                o.setItems(getItemsForOrder(con, o.getId()));
+                orders.add(o);
+            }
+        } catch (SQLException e) {
+            System.err.println("[OrderDAO] getAllOrders() failed: " + e.getMessage());
+        } finally {
+            close(rs, ps, con);
+        }
+        return orders;
+    }
+
+    @Override
+    public double getTotalRevenue() {
+        String sql = "SELECT SUM(total_amount) AS revenue FROM orders WHERE status != 'Cancelled'";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+            con = DBConnection.getConnection();
+            ps  = con.prepareStatement(sql);
+            rs  = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("revenue");
+            }
+        } catch (SQLException e) {
+            System.err.println("[OrderDAO] getTotalRevenue() failed: " + e.getMessage());
+        } finally {
+            close(rs, ps, con);
+        }
+        return 0.0;
     }
 }

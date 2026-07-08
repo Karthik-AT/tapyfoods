@@ -10,7 +10,7 @@ public class DBConnection {
     private static final String DB_NAME = System.getenv("DB_NAME") != null ? System.getenv("DB_NAME") : "tapyfood_db";
     private static final String DB_URL =
         "jdbc:mysql://" + DB_HOST + ":3306/" + DB_NAME +
-        "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata";
+        "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata&characterEncoding=UTF-8";
 
     private static final String DB_USER = System.getenv("DB_USER") != null ? System.getenv("DB_USER") : "root";
     private static final String DB_PASS = System.getenv("DB_PASS") != null ? System.getenv("DB_PASS") : "24-08-2004KAT";

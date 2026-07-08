@@ -61,12 +61,15 @@ public class SignupServlet extends HttpServlet {
             return;
         }
 
+        String role = req.getParameter("role");
+
         User newUser = new User();
         newUser.setName(name.trim());
         newUser.setEmail(email.trim());
         newUser.setPassword(password);          // hash in production!
         newUser.setPhone(phone != null ? phone.trim() : "");
         newUser.setAddress(address != null ? address.trim() : "");
+        newUser.setRole(role != null ? role.trim() : "customer");
 
         boolean registered = userDAO.registerUser(newUser);
 
@@ -77,9 +80,14 @@ public class SignupServlet extends HttpServlet {
             session.setAttribute("userId",    created.getId());
             session.setAttribute("userName",  created.getName());
             session.setAttribute("userEmail", created.getEmail());
+            session.setAttribute("userRole",  created.getRole());
             session.setMaxInactiveInterval(60 * 60);
 
-            resp.sendRedirect(req.getContextPath() + "/restaurants");
+            if ("restaurant_owner".equals(created.getRole())) {
+                resp.sendRedirect(req.getContextPath() + "/owner/dashboard");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/restaurants");
+            }
         } else {
             req.setAttribute("error", "Registration failed. Please try again.");
             req.getRequestDispatcher("/signup.jsp").forward(req, resp);

@@ -11,12 +11,26 @@ public class Restaurant {
     private String imageUrl;
     private String offerBadge;
     private String description;
+    private Integer ownerId;
+    private boolean isActive;
 
     public Restaurant() {}
 
     public Restaurant(int id, String name, String cuisineType, double rating,
                       String deliveryTime, String location, String imageUrl,
                       String offerBadge, String description) {
+        this(id, name, cuisineType, rating, deliveryTime, location, imageUrl, offerBadge, description, null, true);
+    }
+
+    public Restaurant(int id, String name, String cuisineType, double rating,
+                      String deliveryTime, String location, String imageUrl,
+                      String offerBadge, String description, Integer ownerId) {
+        this(id, name, cuisineType, rating, deliveryTime, location, imageUrl, offerBadge, description, ownerId, true);
+    }
+
+    public Restaurant(int id, String name, String cuisineType, double rating,
+                      String deliveryTime, String location, String imageUrl,
+                      String offerBadge, String description, Integer ownerId, boolean isActive) {
         this.id          = id;
         this.name        = name;
         this.cuisineType = cuisineType;
@@ -26,6 +40,8 @@ public class Restaurant {
         this.imageUrl    = imageUrl;
         this.offerBadge  = offerBadge;
         this.description = description;
+        this.ownerId     = ownerId;
+        this.isActive    = isActive;
     }
 
     public int    getId()           { return id; }
@@ -54,6 +70,12 @@ public class Restaurant {
 
     public String getDescription()                   { return description; }
     public void   setDescription(String description) { this.description = description; }
+
+    public Integer getOwnerId()                 { return ownerId; }
+    public void    setOwnerId(Integer ownerId)   { this.ownerId = ownerId; }
+
+    public boolean isActive()                 { return isActive; }
+    public void    setActive(boolean isActive) { this.isActive = isActive; }
 
     @Override
     public String toString() {

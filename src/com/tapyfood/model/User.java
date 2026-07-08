@@ -8,17 +8,24 @@ public class User {
     private String password;
     private String phone;
     private String address;
+    private String role;
 
     public User() {}
 
     public User(int id, String name, String email, String password,
                 String phone, String address) {
+        this(id, name, email, password, phone, address, "customer");
+    }
+
+    public User(int id, String name, String email, String password,
+                String phone, String address, String role) {
         this.id       = id;
         this.name     = name;
         this.email    = email;
         this.password = password;
         this.phone    = phone;
         this.address  = address;
+        this.role     = role;
     }
 
     public int    getId()           { return id; }
@@ -38,6 +45,9 @@ public class User {
 
     public String getAddress()                 { return address; }
     public void   setAddress(String address)   { this.address = address; }
+
+    public String getRole()             { return role; }
+    public void   setRole(String role)   { this.role = role; }
 
     @Override
     public String toString() {

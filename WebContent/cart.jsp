@@ -63,16 +63,13 @@
                         <p class="cart-item-price">₹<%= String.format("%.0f", item.getPrice()) %> per item</p>
                         <div class="cart-item-controls">
                             
-                            <form method="POST" action="${pageContext.request.contextPath}/cart" class="cart-qty-form" id="qty-form-<%= item.getId() %>">
+                            <form method="POST" action="${pageContext.request.contextPath}/cart" class="cart-qty-form" id="qty-form-<%= item.getId() %>" style="display:flex;align-items:center;gap:6px;">
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="cartId" value="<%= item.getId() %>">
-                                <input type="hidden" name="quantity" class="qty-val-input" value="<%= item.getQuantity() %>">
 
-                                <button type="button" class="cart-qty-btn"
-                                        onclick="changeQty(<%= item.getId() %>, -1)">−</button>
-                                <span class="cart-qty-value" id="qty-<%= item.getId() %>"><%= item.getQuantity() %></span>
-                                <button type="button" class="cart-qty-btn"
-                                        onclick="changeQty(<%= item.getId() %>, 1)">+</button>
+                                <button type="submit" name="quantity" value="<%= item.getQuantity() - 1 %>" class="cart-qty-btn" <%= item.getQuantity() <= 1 ? "disabled style='opacity:0.5;cursor:not-allowed;'" : "" %>>−</button>
+                                <span class="cart-qty-value"><%= item.getQuantity() %></span>
+                                <button type="submit" name="quantity" value="<%= item.getQuantity() + 1 %>" class="cart-qty-btn" <%= item.getQuantity() >= 10 ? "disabled style='opacity:0.5;cursor:not-allowed;'" : "" %>>+</button>
                             </form>
 
                             
@@ -130,21 +127,5 @@
 
 <%@ include file="/WEB-INF/includes/footer.jsp" %>
 
-<script>
-// Inline quantity update — submits the hidden form
-function changeQty(cartId, delta) {
-    const display = document.getElementById('qty-' + cartId);
-    const form    = document.getElementById('qty-form-' + cartId);
-    const input   = form.querySelector('.qty-val-input');
-
-    let current = parseInt(display.textContent) + delta;
-    if (current < 1) current = 1;
-    if (current > 10) current = 10;
-
-    display.textContent = current;
-    input.value = current;
-    form.submit();
-}
-</script>
 </body>
 </html>

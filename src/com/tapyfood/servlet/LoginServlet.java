@@ -25,7 +25,14 @@ public class LoginServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("userId") != null) {
-            resp.sendRedirect(req.getContextPath() + "/restaurants");
+            String role = (String) session.getAttribute("userRole");
+            if ("admin".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+            } else if ("restaurant_owner".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/owner/dashboard");
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/restaurants");
+            }
             return;
         }
         req.getRequestDispatcher("/login.jsp").forward(req, resp);
@@ -52,13 +59,21 @@ public class LoginServlet extends HttpServlet {
             session.setAttribute("userId",   user.getId());
             session.setAttribute("userName", user.getName());
             session.setAttribute("userEmail", user.getEmail());
+            session.setAttribute("userRole",  user.getRole());
             session.setMaxInactiveInterval(60 * 60);  // 1 hour session
 
-            String redirect = req.getParameter("redirect");
-            if (redirect != null && !redirect.isEmpty()) {
-                resp.sendRedirect(req.getContextPath() + "/" + redirect);
+            String role = user.getRole();
+            if ("admin".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/admin/dashboard");
+            } else if ("restaurant_owner".equals(role)) {
+                resp.sendRedirect(req.getContextPath() + "/owner/dashboard");
             } else {
-                resp.sendRedirect(req.getContextPath() + "/restaurants");
+                String redirect = req.getParameter("redirect");
+                if (redirect != null && !redirect.isEmpty()) {
+                    resp.sendRedirect(req.getContextPath() + "/" + redirect);
+                } else {
+                    resp.sendRedirect(req.getContextPath() + "/restaurants");
+                }
             }
         } else {
             req.setAttribute("error", "Invalid email or password. Please try again.");

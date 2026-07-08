@@ -14,8 +14,8 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean registerUser(User user) {
-        String sql = "INSERT INTO users (name, email, password, phone, address) " +
-                     "VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (name, email, password, phone, address, role) " +
+                     "VALUES (?, ?, ?, ?, ?, ?)";
 
         Connection con = null;
         PreparedStatement ps = null;
@@ -28,6 +28,7 @@ public class UserDAOImpl implements UserDAO {
             ps.setString(3, user.getPassword());   // hash in production!
             ps.setString(4, user.getPhone());
             ps.setString(5, user.getAddress());
+            ps.setString(6, user.getRole() != null ? user.getRole() : "customer");
 
             int rows = ps.executeUpdate();
             return rows > 0;
@@ -46,7 +47,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User validateLogin(String email, String password) {
-        String sql = "SELECT id, name, email, password, phone, address " +
+        String sql = "SELECT id, name, email, password, phone, address, role " +
                      "FROM users WHERE email = ? AND password = ?";
 
         Connection con = null;
@@ -75,7 +76,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User getUserByEmail(String email) {
-        String sql = "SELECT id, name, email, password, phone, address " +
+        String sql = "SELECT id, name, email, password, phone, address, role " +
                      "FROM users WHERE email = ?";
 
         Connection con = null;
@@ -108,7 +109,8 @@ public class UserDAOImpl implements UserDAO {
             rs.getString("email"),
             rs.getString("password"),
             rs.getString("phone"),
-            rs.getString("address")
+            rs.getString("address"),
+            rs.getString("role")
         );
     }
 
@@ -116,5 +118,31 @@ public class UserDAOImpl implements UserDAO {
         try { if (rs  != null) rs.close();  } catch (SQLException ignored) {}
         try { if (ps  != null) ps.close();  } catch (SQLException ignored) {}
         try { if (con != null) con.close(); } catch (SQLException ignored) {}
+    }
+
+    @Override
+    public java.util.List<User> getUnassignedOwners() {
+        java.util.List<User> owners = new java.util.ArrayList<>();
+        String sql = "SELECT u.id, u.name, u.email, u.password, u.phone, u.address, u.role " +
+                     "FROM users u " +
+                     "LEFT JOIN restaurant r ON u.id = r.owner_id " +
+                     "WHERE u.role = 'restaurant_owner' AND r.id IS NULL";
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            con = DBConnection.getConnection();
+            ps  = con.prepareStatement(sql);
+            rs  = ps.executeQuery();
+            while (rs.next()) {
+                owners.add(mapRow(rs));
+            }
+        } catch (SQLException e) {
+            System.err.println("[UserDAO] getUnassignedOwners() failed: " + e.getMessage());
+        } finally {
+            close(rs, ps, con);
+        }
+        return owners;
     }
 }

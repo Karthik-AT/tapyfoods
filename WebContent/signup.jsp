@@ -71,6 +71,14 @@
                           placeholder="Your default delivery address…"></textarea>
             </div>
 
+            <div class="form-group">
+                <label for="role">Register as</label>
+                <select id="role" name="role" required style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: var(--font-size-base); background-color: var(--card-bg); color: var(--text-color); outline: none;">
+                    <option value="customer">Customer (Order Food)</option>
+                    <option value="restaurant_owner">Restaurant Partner (Sell Food)</option>
+                </select>
+            </div>
+
             <button type="submit" class="btn btn-primary" id="signup-submit-btn">
                 Create Account →
             </button>
@@ -83,6 +91,5 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/js/main.js"></script>
 </body>
 </html>

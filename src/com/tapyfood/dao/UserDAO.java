@@ -1,6 +1,7 @@
 package com.tapyfood.dao;
 
 import com.tapyfood.model.User;
+import java.util.List;
 
 public interface UserDAO {
 
@@ -9,4 +10,6 @@ public interface UserDAO {
     User validateLogin(String email, String password);
 
     User getUserByEmail(String email);
+
+    List<User> getUnassignedOwners();
 }

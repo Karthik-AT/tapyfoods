@@ -19,6 +19,10 @@
         </a>
 
         <ul class="navlist" role="list">
+            <% 
+                String userRole = userId != null ? (String) session.getAttribute("userRole") : null;
+                if (userRole == null || "customer".equals(userRole)) { 
+            %>
             <li class="listitem">
                 <a class="navitem <%= "/index.jsp".equals(currentPath) ? "active" : "" %>"
                    href="<%= request.getContextPath() %>/index.jsp">Home</a>
@@ -33,16 +37,29 @@
                    href="<%= request.getContextPath() %>/orders">My Orders</a>
             </li>
             <% } %>
+            <% } else if ("admin".equals(userRole)) { %>
+            <li class="listitem">
+                <a class="navitem <%= "/admin/dashboard".equals(currentPath) ? "active" : "" %>"
+                   href="<%= request.getContextPath() %>/admin/dashboard">Admin Panel</a>
+            </li>
+            <% } else if ("restaurant_owner".equals(userRole)) { %>
+            <li class="listitem">
+                <a class="navitem <%= "/owner/dashboard".equals(currentPath) ? "active" : "" %>"
+                   href="<%= request.getContextPath() %>/owner/dashboard">Merchant Panel</a>
+            </li>
+            <% } %>
         </ul>
 
         <div class="nav-right">
             <!-- Cart icon with badge -->
+            <% if (userId == null || "customer".equals(session.getAttribute("userRole"))) { %>
             <a href="<%= request.getContextPath() %>/cart" class="cart-icon-btn" aria-label="View Cart">
                 <span class="cart-icon">🛒</span>
                 <% if (cartCount > 0) { %>
                     <span class="cart-badge"><%= cartCount %></span>
                 <% } %>
             </a>
+            <% } %>
 
             <!-- Login/User area -->
             <% if (userId != null) { %>

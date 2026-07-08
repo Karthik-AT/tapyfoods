@@ -27,12 +27,24 @@ public class CartServlet extends HttpServlet {
         // Must be logged in to view cart
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
+            if ("true".equals(req.getParameter("ajax"))) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().write("{\"error\":\"unauthorized\"}");
+                return;
+            }
             resp.sendRedirect(req.getContextPath() + "/login?redirect=cart");
             return;
         }
 
         int userId = (int) session.getAttribute("userId");
         List<CartItem> cartItems = cartDAO.getCartByUserId(userId);
+
+        if ("true".equals(req.getParameter("ajax"))) {
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().write(toJson(cartItems));
+            return;
+        }
 
         double total = cartItems.stream().mapToDouble(CartItem::getSubtotal).sum();
 
@@ -48,6 +60,11 @@ public class CartServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("userId") == null) {
+            if ("true".equals(req.getParameter("ajax"))) {
+                resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                resp.getWriter().write("{\"error\":\"unauthorized\"}");
+                return;
+            }
             resp.sendRedirect(req.getContextPath() + "/login?redirect=cart");
             return;
         }
@@ -61,6 +78,13 @@ public class CartServlet extends HttpServlet {
             handleUpdate(req, resp);
         } else if ("remove".equals(action)) {
             handleRemove(req, resp);
+        }
+
+        if ("true".equals(req.getParameter("ajax"))) {
+            List<CartItem> cartItems = cartDAO.getCartByUserId(userId);
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            resp.getWriter().write(toJson(cartItems));
         } else {
             resp.sendRedirect(req.getContextPath() + "/cart");
         }
@@ -76,7 +100,6 @@ public class CartServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             System.err.println("[CartServlet] Invalid menuId or quantity");
         }
-        resp.sendRedirect(req.getContextPath() + "/cart");
     }
 
     private void handleUpdate(HttpServletRequest req, HttpServletResponse resp)
@@ -88,7 +111,6 @@ public class CartServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             System.err.println("[CartServlet] Invalid cartId or quantity");
         }
-        resp.sendRedirect(req.getContextPath() + "/cart");
     }
 
     private void handleRemove(HttpServletRequest req, HttpServletResponse resp)
@@ -99,6 +121,25 @@ public class CartServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             System.err.println("[CartServlet] Invalid cartId");
         }
-        resp.sendRedirect(req.getContextPath() + "/cart");
+    }
+
+    private String toJson(List<CartItem> items) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+        for (int i = 0; i < items.size(); i++) {
+            CartItem item = items.get(i);
+            sb.append("{");
+            sb.append("\"id\":").append(item.getId()).append(",");
+            sb.append("\"menuId\":").append(item.getMenuId()).append(",");
+            sb.append("\"quantity\":").append(item.getQuantity()).append(",");
+            sb.append("\"price\":").append(item.getPrice()).append(",");
+            sb.append("\"name\":\"").append(item.getName().replace("\"", "\\\"")).append("\"");
+            sb.append("}");
+            if (i < items.size() - 1) {
+                sb.append(",");
+            }
+        }
+        sb.append("]");
+        return sb.toString();
     }
 }

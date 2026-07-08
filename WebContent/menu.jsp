@@ -110,21 +110,68 @@
             <span class="menu-rest-meta-chip">⭐ <%= restaurant.getRating() %></span>
             <span class="menu-rest-meta-chip">⏱ <%= restaurant.getDeliveryTime() %></span>
             <span class="menu-rest-meta-chip">📍 <%= restaurant.getLocation() %></span>
-            <% if (restaurant.getOfferBadge() != null && !restaurant.getOfferBadge().isEmpty()) { %>
-            <span class="menu-rest-meta-chip menu-offer-chip">🏷 <%= restaurant.getOfferBadge() %></span>
-            <% } } %>
+            <% } %>
         </div>
+
+        <%
+            List<com.tapyfood.model.Coupon> availableCoupons = (List<com.tapyfood.model.Coupon>) request.getAttribute("coupons");
+            if (availableCoupons != null && !availableCoupons.isEmpty()) {
+        %>
+            <div class="menu-offers-carousel" style="display: flex; gap: 12px; overflow-x: auto; padding: 15px 0 5px 0; margin-top: 15px; scrollbar-width: none; -ms-overflow-style: none;">
+                <% for (com.tapyfood.model.Coupon c : availableCoupons) {
+                    String discountText = "";
+                    if ("flat".equalsIgnoreCase(c.getDiscountType())) {
+                        discountText = "₹" + String.format("%.0f", c.getDiscountValue()) + " OFF";
+                    } else {
+                        discountText = String.format("%.0f", c.getDiscountValue()) + "% OFF";
+                    }
+                    
+                    String minOrderText = "Above ₹" + String.format("%.0f", c.getMinOrderAmount());
+                    if ("FIRSTRY".equals(c.getCode())) {
+                        discountText = "₹100 OFF + FREE DELIVERY";
+                        minOrderText = "For New Users | Min ₹149";
+                    } else if ("WELCOME50".equals(c.getCode())) {
+                        discountText = "₹50 OFF";
+                        minOrderText = "First Order | Min ₹100";
+                    }
+                %>
+                    <div class="offer-card" style="flex: 0 0 auto; background: rgba(255, 255, 255, 0.08); border: 1px dashed rgba(247, 238, 220, 0.3); border-radius: 10px; padding: 10px 16px; display: flex; flex-direction: column; gap: 4px; min-width: 170px; transition: all 0.2s; cursor: pointer;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">
+                        <div style="display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.85rem; color: #F7EEDC;">
+                            <span style="font-size: 1rem; color: var(--color-tertiary);">🉐</span>
+                            <%= discountText %>
+                        </div>
+                        <div style="font-size: 0.72rem; color: rgba(247, 238, 220, 0.7); font-weight: 500;">
+                            <%= minOrderText %>
+                        </div>
+                        <div style="font-size: 0.72rem; font-weight: 700; color: var(--color-tertiary); letter-spacing: 0.05em; margin-top: 2px;">
+                            USE CODE: <span style="background: rgba(217, 119, 66, 0.15); padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(217, 119, 66, 0.3);"><%= c.getCode() %></span>
+                        </div>
+                    </div>
+                <% } %>
+            </div>
+        <% } %>
     </div>
 </div>
 
 
 <div class="menu-category-tabs-wrap" style="background:var(--color-neutral);border-bottom:1px solid var(--color-border);position:sticky;top:72px;z-index:100;">
     <div class="menu-category-tabs">
-        <button class="cat-tab active" data-category="all">All</button>
-        <% for (int i = 0; i < categories.length; i++) { %>
-        <button class="cat-tab" data-category="<%= categories[i] %>">
-            <%= catIcons[i] %> <%= categories[i] %>
-        </button>
+        <%
+            String activeCat = (String) request.getAttribute("categoryParam");
+            if (activeCat == null || activeCat.isEmpty()) activeCat = "all";
+            
+            String allUrl = request.getContextPath() + "/menu?restaurantId=" + restaurant.getId() + "&category=all";
+            String activeAllClass = activeCat.equalsIgnoreCase("all") ? "active" : "";
+        %>
+        <a class="cat-tab <%= activeAllClass %>" href="<%= allUrl %>">All</a>
+        <% for (int i = 0; i < categories.length; i++) {
+            String catName = categories[i];
+            String catUrl = request.getContextPath() + "/menu?restaurantId=" + restaurant.getId() + "&category=" + catName;
+            String activeClass = activeCat.equalsIgnoreCase(catName) ? "active" : "";
+        %>
+        <a class="cat-tab <%= activeClass %>" href="<%= catUrl %>">
+            <%= catIcons[i] %> <%= catName %>
+        </a>
         <% } %>
     </div>
 </div>
@@ -176,22 +223,45 @@
                             
                             <% Integer loggedUserId = (Integer) session.getAttribute("userId"); %>
                             <% if (loggedUserId != null) { %>
-                            <form method="POST"
-                                  action="${pageContext.request.contextPath}/cart"
-                                  class="qty-form add-to-cart-form">
-                                <input type="hidden" name="action"   value="add">
-                                <input type="hidden" name="menuId"   value="<%= item.getId() %>">
-                                <input type="hidden" name="quantity" value="1" class="qty-hidden-input">
-
-                                <div style="display:flex;align-items:center;gap:8px;">
-                                    <button type="button" class="qty-btn dec" aria-label="Decrease">−</button>
-                                    <span class="qty-display">1</span>
-                                    <button type="button" class="qty-btn inc" aria-label="Increase">+</button>
-                                    <button type="submit" class="btn btn-primary btn-sm add-to-cart-btn">
-                                        Add to Cart
+                                <%
+                                    List<com.tapyfood.model.CartItem> cartItems = (List<com.tapyfood.model.CartItem>) request.getAttribute("cartItems");
+                                    int currentQty = 0;
+                                    int cartItemId = 0;
+                                    if (cartItems != null) {
+                                        for (com.tapyfood.model.CartItem ci : cartItems) {
+                                            if (ci.getMenuId() == item.getId()) {
+                                                currentQty = ci.getQuantity();
+                                                cartItemId = ci.getId();
+                                                break;
+                                            }
+                                        }
+                                    }
+                                %>
+                                <div class="qty-selector-wrapper" data-menu-id="<%= item.getId() %>" data-cart-id="<%= cartItemId %>" data-price="<%= item.getPrice() %>">
+                                    <button type="button" 
+                                            class="btn btn-outline-primary btn-sm add-init-btn" 
+                                            id="add-btn-<%= item.getId() %>" 
+                                            style="display: <%= currentQty == 0 ? "inline-flex" : "none" %>; align-items: center; justify-content: center; gap: 4px; padding: 8px 20px; font-weight: 700; font-size: 0.9rem; border: 1.5px solid var(--color-tertiary); color: var(--color-tertiary); background: #ffffff; border-radius: 8px; cursor: pointer; transition: all 0.2s;" 
+                                            onclick="addToCartAjax(<%= item.getId() %>)">
+                                        ADD <span style="font-weight: 900; font-size: 1.1rem; line-height: 1;">+</span>
                                     </button>
+                                    
+                                    <div class="qty-selector" 
+                                         id="qty-selector-<%= item.getId() %>" 
+                                         style="display: <%= currentQty > 0 ? "inline-flex" : "none" %>; align-items: center; justify-content: space-between; width: 100px; height: 38px; border: 1.5px solid var(--color-tertiary); background: #ffffff; border-radius: 8px; padding: 0 8px; box-shadow: var(--shadow-sm);">
+                                        <button type="button" 
+                                                class="qty-btn dec-btn" 
+                                                style="background: none; border: none; font-size: 1.3rem; font-weight: 800; color: var(--color-tertiary); cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; outline: none; user-select: none;"
+                                                onclick="updateQtyAjax(<%= item.getId() %>, -1)">−</button>
+                                        <span class="qty-val" 
+                                              id="qty-val-<%= item.getId() %>" 
+                                              style="font-family: var(--font-body); font-weight: 700; font-size: 0.95rem; color: var(--color-tertiary); width: 24px; text-align: center;"><%= currentQty %></span>
+                                        <button type="button" 
+                                                class="qty-btn inc-btn" 
+                                                style="background: none; border: none; font-size: 1.3rem; font-weight: 800; color: var(--color-tertiary); cursor: pointer; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; outline: none; user-select: none;"
+                                                onclick="updateQtyAjax(<%= item.getId() %>, 1)">+</button>
+                                    </div>
                                 </div>
-                            </form>
                             <% } else { %>
                             <a href="${pageContext.request.contextPath}/login"
                                class="btn btn-primary btn-sm">
@@ -209,8 +279,153 @@
     </div>
 </main>
 
+<!-- Floating Cart Bar -->
+<div id="floating-cart-bar" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background: var(--color-primary); color: #ffffff; border-radius: 12px; padding: 14px 20px; display: none; align-items: center; justify-content: space-between; box-shadow: 0 10px 30px rgba(43,24,16,0.3); z-index: 1000; animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);">
+    <div style="display: flex; align-items: center; gap: 12px;">
+        <span style="font-size: 1.4rem;">🛒</span>
+        <div>
+            <span id="cart-item-count" style="font-weight: 700; font-size: 0.95rem;">0 Items</span>
+            <span style="color: rgba(255,255,255,0.4); margin: 0 8px;">|</span>
+            <span id="cart-total-amount" style="font-weight: 700; font-size: 0.95rem;">₹0</span>
+        </div>
+    </div>
+    <a href="${pageContext.request.contextPath}/cart" style="background: var(--color-tertiary); color: #ffffff; text-decoration: none; padding: 8px 16px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; display: flex; align-items: center; gap: 6px; transition: background 0.2s;">
+        View Cart <span>➔</span>
+    </a>
+</div>
+
+<style>
+    @keyframes slideUp {
+        from { transform: translate(-50%, 50px); opacity: 0; }
+        to { transform: translate(-50%, 0); opacity: 1; }
+    }
+    .qty-selector-wrapper button:hover {
+        background: #fdf6f0 !important;
+    }
+</style>
+
+<script>
+    function updateCartUI(cartItems) {
+        // Reset all selector inputs on the page to 0 (ADD button visible, qty selector hidden)
+        document.querySelectorAll('.qty-selector-wrapper').forEach(wrapper => {
+            const menuId = wrapper.getAttribute('data-menu-id');
+            wrapper.setAttribute('data-cart-id', '0');
+            document.getElementById('add-btn-' + menuId).style.display = 'inline-flex';
+            document.getElementById('qty-selector-' + menuId).style.display = 'none';
+            document.getElementById('qty-val-' + menuId).textContent = '0';
+        });
+
+        let totalItems = 0;
+        let totalPrice = 0.0;
+
+        // Loop through active cart items returned by server
+        cartItems.forEach(item => {
+            const wrapper = document.querySelector('.qty-selector-wrapper[data-menu-id="' + item.menuId + '"]');
+            if (wrapper) {
+                const menuId = item.menuId;
+                wrapper.setAttribute('data-cart-id', item.id);
+                document.getElementById('add-btn-' + menuId).style.display = 'none';
+                document.getElementById('qty-selector-' + menuId).style.display = 'inline-flex';
+                document.getElementById('qty-val-' + menuId).textContent = item.quantity;
+            }
+            totalItems += item.quantity;
+            totalPrice += item.quantity * item.price;
+        });
+
+        // Update floating cart bar
+        const cartBar = document.getElementById('floating-cart-bar');
+        if (cartBar) {
+            if (totalItems > 0) {
+                document.getElementById('cart-item-count').textContent = totalItems + (totalItems === 1 ? ' Item' : ' Items');
+                document.getElementById('cart-total-amount').textContent = '₹' + totalPrice.toFixed(0);
+                cartBar.style.display = 'flex';
+            } else {
+                cartBar.style.display = 'none';
+            }
+        }
+    }
+
+    function addToCartAjax(menuId) {
+        const formData = new URLSearchParams();
+        formData.append('action', 'add');
+        formData.append('menuId', menuId);
+        formData.append('quantity', '1');
+        formData.append('ajax', 'true');
+
+        fetch('${pageContext.request.contextPath}/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => {
+            if (response.status === 401) {
+                window.location.href = '${pageContext.request.contextPath}/login?redirect=menu';
+                return;
+            }
+            return response.json();
+        })
+        .then(cartItems => {
+            if (cartItems) {
+                updateCartUI(cartItems);
+            }
+        })
+        .catch(err => console.error('Error adding to cart:', err));
+    }
+
+    function updateQtyAjax(menuId, change) {
+        const wrapper = document.querySelector('.qty-selector-wrapper[data-menu-id="' + menuId + '"]');
+        if (!wrapper) return;
+
+        const cartId = wrapper.getAttribute('data-cart-id');
+        const currentQty = parseInt(document.getElementById('qty-val-' + menuId).textContent);
+        const newQty = currentQty + change;
+
+        const formData = new URLSearchParams();
+        formData.append('ajax', 'true');
+
+        if (newQty <= 0) {
+            formData.append('action', 'remove');
+            formData.append('cartId', cartId);
+        } else {
+            formData.append('action', 'update');
+            formData.append('cartId', cartId);
+            formData.append('quantity', newQty);
+        }
+
+        fetch('${pageContext.request.contextPath}/cart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => response.json())
+        .then(cartItems => {
+            if (cartItems) {
+                updateCartUI(cartItems);
+            }
+        })
+        .catch(err => console.error('Error updating quantity:', err));
+    }
+
+    // Run on page load to initialize the floating cart bar
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('${pageContext.request.contextPath}/cart?ajax=true')
+        .then(response => {
+            if (response.ok) return response.json();
+        })
+        .then(cartItems => {
+            if (cartItems) {
+                updateCartUI(cartItems);
+            }
+        })
+        .catch(err => console.error('Error fetching initial cart state:', err));
+    });
+</script>
+
 <%@ include file="/WEB-INF/includes/footer.jsp" %>
 
-<script src="${pageContext.request.contextPath}/js/menu.js"></script>
 </body>
 </html>

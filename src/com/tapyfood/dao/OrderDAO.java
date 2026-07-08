@@ -14,4 +14,12 @@ public interface OrderDAO {
     Order getOrderById(int orderId);
 
     boolean updateOrderStatus(int orderId, String status);
+
+    List<Order> getOrdersByRestaurantId(int restaurantId);
+
+    double getRevenueByRestaurantId(int restaurantId);
+
+    List<Order> getAllOrders();
+
+    double getTotalRevenue();
 }
